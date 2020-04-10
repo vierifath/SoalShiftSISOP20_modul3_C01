@@ -30,16 +30,6 @@ adalah:
 mengambil variabel hasil perkalian matriks dari program "4a.c" (program
 sebelumnya), dan tampilkan hasil matriks tersebut ke layar.
 ( Catatan! : gunakan shared memory)
-2. Setelah ditampilkan, berikutnya untuk setiap angka dari matriks
-tersebut, carilah nilai faktorialnya , dan tampilkan hasilnya ke layar dengan
-format seperti matriks.
-Contoh: misal array [[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12], ...],
-maka:
-1 2 6 24
-120 720 … …
-...
-( Catatan! : Harus menggunakan Thread dalam penghitungan
-faktorial)
 - Batu ketiga adalah Onyx. Batu mulia berwarna hitam mengkilat. Pecahkan
 teka-teki berikut!
 1. Buatlah program C ketiga dengan nama " 4c.c ". Program ini tidak
@@ -60,11 +50,15 @@ Sebelum menghilang, dia menyisakan semua petunjuk tentang harta karun tersebut
 melalui tulisan dalam buku catatannya yang tersebar di penjuru dunia. "One Piece
 does exist".
 
+## JAWABAN NO 4A
+
 ```
 //Referensi ada di bawah
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
+#include <sys/ipc.h>
+#include <sys/shm.h>
 
 #define M 4
 #define K 2
@@ -72,9 +66,11 @@ does exist".
 #define NUM_THREADS M * N
 
 /* Global variables for threads to share */
+int(*C)[10];
+
 int A[M][K] = {{1, 1}, {1, 1}, {1, 1}, {1, 1}};
 int B[K][N] = {{2, 2, 2, 2, 2}, {2, 2, 2, 2, 2}};
-int C[M][N];
+
 
 /* Structure for passing data to threads */
 struct v
@@ -89,6 +85,9 @@ int main(int argc, char **argv)
 {
 	int i, j;
 	int thread_counter = 0;
+	key_t key = 1234;
+    int shmid = shmget(key, sizeof(int[10][10]), IPC_CREAT | 0666);
+    C = shmat(shmid, 0, 0);
 	
 	pthread_t workers[NUM_THREADS];
 	
@@ -143,10 +142,179 @@ void *runner(void *ptr)
 https://gist.github.com/ozanyildiz/1863593
 https://www.geeksforgeeks.org/multiplication-of-matrix-using-threads/
 https://github.com/VYPRATAMA009/sisop-modul-3#26-shared-memory */
+
 ```
 
 ### Referensi   :
 https://gist.github.com/ozanyildiz/1863593
 
-### Output  :
+## Output  :
 ![MODUL3](https://user-images.githubusercontent.com/61290164/78349728-3ddfa080-75ce-11ea-8ce0-242eca0ce963.PNG)
+
+## SOAL NO. 4B
+
+
+2. Setelah ditampilkan, berikutnya untuk setiap angka dari matriks
+tersebut, carilah nilai faktorialnya , dan tampilkan hasilnya ke layar dengan
+format seperti matriks.
+Contoh: misal array [[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12], ...],
+maka:
+1 2 6 24
+120 720 … …
+...
+( Catatan! : Harus menggunakan Thread dalam penghitungan
+faktorial)
+
+
+
+
+## JAWABAN NO. 4B
+
+
+```
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/ipc.h>
+#include <sys/shm.h>
+#include <unistd.h>
+#include <pthread.h>
+
+void pthread_exit(void *rval_ptr);
+int pthread_join(pthread_t thread, void **rval_ptr);
+pthread_t thread1;
+
+void *factorial();
+unsigned long long output[4][5];
+
+
+void main()
+{
+    key_t key = 1234;
+    int (*C)[10];
+    int shmid = shmget(key, sizeof(int), IPC_CREAT | 0666);
+    C = shmat(shmid, 0, 0);
+
+	// menampilkan matrix
+    int i,j;
+	for(i=0;i<4;i++)
+	{
+		for(j=0;j<5;j++)
+		{
+			printf("%d\t", C[i][j]);
+		}
+		printf("\n");
+	}
+
+	printf("\n");
+	
+	int newthread;
+	newthread = pthread_create(&thread1, NULL, factorial, NULL);
+	pthread_join(thread1,NULL);
+	for(i=0;i<4;i++)
+	{
+		for(j=0;j<5;j++)
+		{
+			printf("%llu\t", output[i][j]);
+		}
+		printf("\n");
+	}
+
+	exit (EXIT_SUCCESS);
+}
+
+void *factorial()
+{
+    key_t key = 1234;
+    int (*C)[10];
+    int shmid = shmget(key, sizeof(int), IPC_CREAT | 0666);
+    C = shmat(shmid, 0, 0);
+
+	int i,j,k;
+	for(i=0;i<4;i++)
+	{
+		for(j=0;j<5;j++)
+		{
+			unsigned long long f=1;
+			for(k=1;k<=C[i][j];k++)
+			{
+				f= f+k;
+				output[i][j] = f-1;
+			}
+		}
+	}
+}
+
+```
+
+## OUTPUT	:
+![4B](https://user-images.githubusercontent.com/61290164/79011784-ff7a5080-7b8e-11ea-8caf-8aab25a4b5c9.PNG)
+
+## SOAL 4C
+
+- Batu ketiga adalah Onyx. Batu mulia berwarna hitam mengkilat. Pecahkan
+teka-teki berikut!
+1. Buatlah program C ketiga dengan nama " 4c.c ". Program ini tidak
+memiliki hubungan terhadap program yang lalu.
+2. Pada program ini, Norland diminta mengetahui jumlah file dan
+folder di direktori saat ini dengan command " ls | wc -l ". Karena sudah belajar
+IPC, Norland mengerjakannya dengan semangat.
+( Catatan! : Harus menggunakan IPC Pipes)
+Begitu batu terakhir berhasil didapatkan. Gemuruh yang semakin lama semakin
+besar terdengar. Seluruh tempat berguncang dahsyat, tanah mulai merekah. Sebuah
+batu yang di atasnya terdapat kotak kayu muncul ke atas dengan sendirinya.
+Sementara batu tadi kembali ke posisinya. Tanah kembali menutup, seolah tidak
+pernah ada lubang merekah di atasnya satu detik lalu.
+Norland segera memasukkan tiga buah batu mulia Emerald, Amethys, Onyx pada
+Peti Kayu. Maka terbukalah Peti Kayu tersebut. Di dalamnya terdapat sebuah harta
+karun rahasia. Sampai saat ini banyak orang memburu harta karun tersebut.
+Sebelum menghilang, dia menyisakan semua petunjuk tentang harta karun tersebut
+melalui tulisan dalam buku catatannya yang tersebar di penjuru dunia. "One Piece
+does exist".
+
+
+## JAWABAN 4C
+
+
+```
+#include <stdlib.h>
+#include <unistd.h>
+
+int pid;
+int pipe1[2];
+
+int main()
+{
+  if (pipe(pipe1) == -1)
+    exit(1);
+
+  if ((fork()) == 0) 
+  {
+    // output to pipe1
+    dup2(pipe1[1], 1);
+    // close fds
+    close(pipe1[0]);
+    close(pipe1[1]);
+    // exec
+    char *argv1[] = {"ls", NULL};
+		execv("/bin/ls", argv1);
+  }
+
+  else
+  {
+    // input from pipe1
+    dup2(pipe1[0], 0);
+
+    // close fds
+    close(pipe1[0]);
+    close(pipe1[1]);
+
+    // exec
+    char *argv1[] = {"wc", "-l", NULL};
+		execv("/usr/bin/wc", argv1);
+  }
+}
+
+```
+
+## OUTPUT	:
+![4C](https://user-images.githubusercontent.com/61290164/79011788-00ab7d80-7b8f-11ea-8813-03e21f29eb34.PNG)
