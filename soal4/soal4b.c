@@ -83,7 +83,7 @@ pthread_t thread1;
 void *factorial();
 unsigned long long output[4][5];
 
-//main
+
 void main()
 {
     key_t key = 1234;
