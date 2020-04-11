@@ -349,7 +349,7 @@ pthread_t thread1;
 
 #### Menampilkan Matriks dari jawaban 4a.c
 
-```
+
 ```	
     int i,j;
 	for(i=0;i<4;i++)
@@ -364,7 +364,7 @@ pthread_t thread1;
 ```
 
 #### Hasil faktorial suatu matriks dari THREAD
-```
+
 ```
 	int newthread;
 	newthread = pthread_create(&thread1, NULL, factorial, NULL);
@@ -382,7 +382,7 @@ pthread_t thread1;
 	exit (EXIT_SUCCESS);
 }
 ```
-```
+
 #### Menampilkan fungsi thread faktorial 
 
 ```
