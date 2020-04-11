@@ -1,38 +1,37 @@
-#include <stdlib.h>
-#include <unistd.h>
+#include<stdio.h> 
+#include<stdlib.h> 
+#include<unistd.h> 
+#include<sys/types.h> 
+#include<string.h> 
+#include<sys/wait.h> 
 
-int pid;
-int pipe1[2];
+int main() {
+    int pfds[2];
+    
+    pipe(pfds);
 
-int main()
-{
-  if (pipe(pipe1) == -1)
-    exit(1);
+    if (pipe(pfds)==-1) 
+	{ 
+		fprintf(stderr, "Pipe Failed" ); 
+		return 1; 
+	} 
 
-  if ((fork()) == 0) 
-  {
-    // output to pipe1
-    dup2(pipe1[1], 1);
-    // close fds
-    close(pipe1[0]);
-    close(pipe1[1]);
-    // exec
-    char *argv1[] = {"ls", NULL};
-		execv("/bin/ls", argv1);
-  }
+    pid_t pid = fork();
 
-  else
-  {
-    // input from pipe1
-    dup2(pipe1[0], 0);
+    if(pid < 0 ) {
+        perror("fork error");
+    }
 
-    // close fds
-    close(pipe1[0]);
-    close(pipe1[1]);
-
-    // exec
-    char *argv1[] = {"wc", "-l", NULL};
-		execv("/usr/bin/wc", argv1);
-  }
+    else if(pid==0) {
+        close(1);
+        dup(pfds[1]);
+        close(pfds[0]);
+        execlp("/bin/ls","ls",NULL);
+    }
+    else {
+        close(0);
+        dup(pfds[0]);
+        close(pfds[1]);
+        execlp("/usr/bin/wc","wc","-l",NULL);
+    }
 }
-
