@@ -8,6 +8,9 @@ ANGGOTA         :
 
 
 ### Jawaban Soal Shift Modul 3
+
+
+#### No 1 dan 2 masih belum selesai
 ### NO 3
 
 ![45555](https://user-images.githubusercontent.com/61290164/79045540-dcef4280-7c35-11ea-8e48-bcc519529e7f.PNG)
