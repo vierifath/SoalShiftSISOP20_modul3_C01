@@ -299,12 +299,12 @@ void *runner(void *ptr)
 	C[data->i][data->j] = sum;
 	pthread_exit(0);
 }
-```
+
 /*REFERENCES : 
 https://gist.github.com/ozanyildiz/1863593
 https://www.geeksforgeeks.org/multiplication-of-matrix-using-threads/
 https://github.com/VYPRATAMA009/sisop-modul-3#26-shared-memory */
-
+```
 
 
 ### Referensi   :
