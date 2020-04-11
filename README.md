@@ -240,7 +240,7 @@ int B[K][N] = {{2, 2, 2, 2, 2}, {2, 2, 2, 2, 2}};
 key_t key = 1234;
 int shmid = shmget(key, sizeof(int[10][10]), IPC_CREAT | 0666);
 C = shmat(shmid, 0, 0);
-```	
+
 ```
 #### Menjalankan Perkalian matriks di THREAD
 
