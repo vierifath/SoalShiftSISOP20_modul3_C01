@@ -50,7 +50,7 @@ juga menggunakan fork-exec dan system.
 dicoba-coba sendiri untuk kemungkinan test case lainnya yang mungkin
 belum ada di soal3.zip.
 
-### Fungsi getExt digunakan untuk mendapatkan string setelah "." dan fungsi getDir digunakan untuk mendapatkan string setelah "/" 
+#### Fungsi getExt digunakan untuk mendapatkan string setelah "." dan fungsi getDir digunakan untuk mendapatkan string setelah "/" 
 
 
 ```
@@ -69,7 +69,7 @@ char *getDir (char fspec[]) {
 
 ```
 
-### Program ini tidak case sensitive, jadi huruf kapital diganti huruf kecil biar sama
+#### Program ini tidak case sensitive, jadi huruf kapital diganti huruf kecil biar sama
 
 ```
 void lower_string(char s[]) {
@@ -84,8 +84,8 @@ void lower_string(char s[]) {
 }
 ```
 
-### Ekstensi dari nama file tersebut untuk membuat nama folder "strtok(getExt((in)),".")"   
-### Jika tidak eksteni maka akan membuat folder "Unknown" 
+#### Ekstensi dari nama file tersebut untuk membuat nama folder "strtok(getExt((in)),".")"   
+#### Jika tidak ekstensi maka akan membuat folder "Unknown" 
 ```
 void* categoryf(void *arg){
     char nf[100];
@@ -109,6 +109,82 @@ void* categoryf(void *arg){
      sprintf(nf,"Unknown/%s",strtok(getDir(in),"/"));
      rename(in, nf);
      }
+}
+```
+#### Mmbuka direktori file dan memindahkan kedalam folder sesuai exstensinya, dan jika tidak punya extensi maka akan dipindahkan ke folder "Unknown".
+
+```
+void* categorystar(void *arg){
+    char nama[100];
+    struct dirent *de;
+    DIR *dr = opendir(".");
+    while ((de = readdir(dr)) != NULL){ 
+       if (de->d_type == DT_REG)
+       {    
+         if(strlen(getExt(de->d_name)) != 0){
+              char na[100];
+              strcpy(na,strtok(getExt((de->d_name)),"."));
+              lower_string(na);
+              if (stat(na, &st) == -1)
+              {
+                 mkdir(na,0777);
+              }
+              sprintf(nama,"%s/%s",na,de->d_name);
+              rename(de->d_name , nama);
+           
+        }
+       else{
+         if (stat("Unknown)", &st) == -1)
+         {    
+             mkdir("Unknown",0777);
+         }
+         sprintf(nama,"Unknown/%s",de->d_name);
+         rename(de->d_name, nama);
+       }}
+    }
+    closedir(dr);
+}
+```
+
+#### Pada opsi -f tersebut, user bisa menambahkan argumen file yang bisa dikategorikan sebanyak yang user inginkan seperti contoh di atas.
+
+```
+    if(strcmp(argv[1],"-f")==0){
+        for (int i = 2; i < argc; i++) {
+           strcpy(in,argv[i]);
+           int* p;
+           pthread_create(&threads[i-1], NULL, categoryf, (void*)(p));
+           pthread_join(threads[i-1], NULL);
+           printf("%s\n",input(in));
+        }
+    }
+```
+
+
+
+#### Untuk opsi -d ini, user hanya bisa menginput 1 directory saja, tidak seperti file yang bebas menginput file sebanyak mungkin.
+
+
+```
+    else if(strcmp(argv[1],"-d") == 0){
+        struct dirent *de;
+        DIR *dr = opendir(argv[2]);
+        while ((de = readdir(dr)) != NULL){ 
+        if (de->d_type == DT_REG)
+        {
+          a++;
+        }
+        }
+        printf("%d\n",a);
+        closedir(dr);
+        strcpy(in,argv[2]);
+        for(int b=0;b<a;b++){
+           int* p;
+           pthread_create(&threads[b], NULL, categoryd, (void*)(p));
+           pthread_join(threads[b], NULL);
+        }
+
+    }
 }
 ```
 
@@ -169,14 +245,10 @@ does exist".
 
 ## JAWABAN NO 4A
 
-```
-//Referensi ada di bawah
-#include <stdio.h>
-#include <stdlib.h>
-#include <pthread.h>
-#include <sys/ipc.h>
-#include <sys/shm.h>
+#### Deklarasi untuk ukuran matriks dan isi matriks
 
+
+```
 #define M 4
 #define K 2
 #define N 5
@@ -188,25 +260,30 @@ int(*C)[10];
 int A[M][K] = {{1, 1}, {1, 1}, {1, 1}, {1, 1}};
 int B[K][N] = {{2, 2, 2, 2, 2}, {2, 2, 2, 2, 2}};
 
+```
 
-/* Structure for passing data to threads */
-struct v
+#### Struct berisi passing data ke thread
+
+```
 {
 	int i; /* row */
 	int j; /* column */
 };
+```
 
-void *runner(void *ptr); /* the thread */
+#### Shared Memory
 
-int main(int argc, char **argv)
-{
-	int i, j;
-	int thread_counter = 0;
-	key_t key = 1234;
-    int shmid = shmget(key, sizeof(int[10][10]), IPC_CREAT | 0666);
-    C = shmat(shmid, 0, 0);
-	
-	pthread_t workers[NUM_THREADS];
+
+```
+key_t key = 1234;
+int shmid = shmget(key, sizeof(int[10][10]), IPC_CREAT | 0666);
+C = shmat(shmid, 0, 0);
+```	
+```
+#### Menjalankan Perkalian matriks di THREAD
+
+```
+pthread_t workers[NUM_THREADS];
 	
 	/* We have to create M * N worker threads */
 	for (i = 0; i < M; i++)
@@ -239,7 +316,10 @@ int main(int argc, char **argv)
 	}
 	return 0;
 }
+```
 
+#### Casting parameter ke struct v pointer
+```
 void *runner(void *ptr)
 {	
 	/* Casting paramater to struct v pointer */
@@ -287,31 +367,28 @@ faktorial)
 
 ## JAWABAN NO. 4B
 
-
+#### Melakukan Join Thread
 ```
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/ipc.h>
-#include <sys/shm.h>
-#include <unistd.h>
-#include <pthread.h>
 
 void pthread_exit(void *rval_ptr);
 int pthread_join(pthread_t thread, void **rval_ptr);
 pthread_t thread1;
 
-void *factorial();
-unsigned long long output[4][5];
+```
 
+#### Shared Memory
 
-void main()
-{
+```
     key_t key = 1234;
     int (*C)[10];
     int shmid = shmget(key, sizeof(int), IPC_CREAT | 0666);
     C = shmat(shmid, 0, 0);
+```
 
-	// menampilkan matrix
+#### Menampilkan Matriks dari jawaban 4a.c
+
+```
+```	
     int i,j;
 	for(i=0;i<4;i++)
 	{
@@ -321,9 +398,12 @@ void main()
 		}
 		printf("\n");
 	}
-
 	printf("\n");
-	
+```
+
+#### Hasil faktorial suatu matriks dari THREAD
+```
+```
 	int newthread;
 	newthread = pthread_create(&thread1, NULL, factorial, NULL);
 	pthread_join(thread1,NULL);
@@ -336,9 +416,14 @@ void main()
 		printf("\n");
 	}
 
+
 	exit (EXIT_SUCCESS);
 }
+```
+```
+#### Menampilkan fungsi thread faktorial 
 
+```
 void *factorial()
 {
     key_t key = 1234;
