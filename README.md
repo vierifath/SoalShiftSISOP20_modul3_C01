@@ -164,9 +164,6 @@ void* categorystar(void *arg){
 
 
 
-
-
-
 ### NO 4
 4. Norland adalah seorang penjelajah terkenal. Pada suatu malam Norland menyusuri
 jalan setapak menuju ke sebuah gua dan mendapati tiga pilar yang pada setiap
