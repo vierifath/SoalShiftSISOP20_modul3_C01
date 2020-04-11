@@ -111,7 +111,7 @@ void* categoryf(void *arg){
      }
 }
 ```
-#### Mmbuka direktori file dan memindahkan kedalam folder sesuai exstensinya, dan jika tidak punya extensi maka akan dipindahkan ke folder "Unknown".
+#### Membuka direktori file dan memindahkan kedalam folder sesuai exstensinya, dan jika tidak punya extensi maka akan dipindahkan ke folder "Unknown".
 
 ```
 void* categorystar(void *arg){
@@ -334,13 +334,13 @@ void *runner(void *ptr)
 	C[data->i][data->j] = sum;
 	pthread_exit(0);
 }
-
+```
 /*REFERENCES : 
 https://gist.github.com/ozanyildiz/1863593
 https://www.geeksforgeeks.org/multiplication-of-matrix-using-threads/
 https://github.com/VYPRATAMA009/sisop-modul-3#26-shared-memory */
 
-```
+
 
 ### Referensi   :
 https://gist.github.com/ozanyildiz/1863593
@@ -476,44 +476,51 @@ does exist".
 
 ## JAWABAN 4C
 
+#### Dideklarasikan sebuah array pfds yang berukuran 2. Maksudnya adalah disini nanti kita akan menggunakan 1 pipe dimana nanti pfds[0] berfungsi sebagai read, dan pfds[1] berfungsi sebagai write.
+
+#### Pipe(pfds) akan membuat sebuah pipe. Kemudian dicek apakah pembuatan pipe tersebut berhasil atau tidak dengan melihat return value nya
+```
+
+int main() {
+    int pfds[2];
+    
+    pipe(pfds);
+
+    if (pipe(pfds)==-1) 
+	{ 
+		fprintf(stderr, "Pipe Failed" ); 
+		return 1; 
+	} 
 
 ```
-#include <stdlib.h>
-#include <unistd.h>
+#### Kemudian akan dibuat proses fork. Lalu kita akan mengecek apakah pembuatan proses fork tsb berhasil atau tidak. Dimana jika gagal fork akan mereturn nilai negatif
 
-int pid;
-int pipe1[2];
+```
+pid_t pid = fork();
 
-int main()
-{
-  if (pipe(pipe1) == -1)
-    exit(1);
+    if(pid < 0 ) {
+        perror("fork error");
+    }
+```
+#### Fork pada parent yang menrima inputan dari child yang dihubungkan dengan pipe
 
-  if ((fork()) == 0) 
-  {
-    // output to pipe1
-    dup2(pipe1[1], 1);
-    // close fds
-    close(pipe1[0]);
-    close(pipe1[1]);
-    // exec
-    char *argv1[] = {"ls", NULL};
-		execv("/bin/ls", argv1);
-  }
+```
+    else if(pid==0) {
+        close(1);
+        dup(pfds[1]);
+        close(pfds[0]);
+        execlp("/bin/ls","ls",NULL);
+    }
+```    
+#### Child process untuk menampilkan ls    
 
-  else
-  {
-    // input from pipe1
-    dup2(pipe1[0], 0);
-
-    // close fds
-    close(pipe1[0]);
-    close(pipe1[1]);
-
-    // exec
-    char *argv1[] = {"wc", "-l", NULL};
-		execv("/usr/bin/wc", argv1);
-  }
+```   
+   else {
+        close(0);
+        dup(pfds[0]);
+        close(pfds[1]);
+        execlp("/usr/bin/wc","wc","-l",NULL);
+    }
 }
 
 ```
