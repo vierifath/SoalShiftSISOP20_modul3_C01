@@ -9,6 +9,8 @@ ANGGOTA         :
 
 ### Jawaban Soal Shift Modul 3
 ### NO 3
+
+![45555](https://user-images.githubusercontent.com/61290164/79045540-dcef4280-7c35-11ea-8e48-bcc519529e7f.PNG)
 Buatlah sebuah program dari C untuk mengkategorikan file. Program ini akan
 memindahkan file sesuai ekstensinya (tidak case sensitive. JPG dan jpg adalah
 sama) ke dalam folder sesuai ekstensinya yang folder hasilnya terdapat di working
@@ -49,6 +51,8 @@ juga menggunakan fork-exec dan system.
 ● Silahkan download soal3.zip sebagai percobaan. Namun silahkan
 dicoba-coba sendiri untuk kemungkinan test case lainnya yang mungkin
 belum ada di soal3.zip.
+
+## PENJELASAN
 
 #### Fungsi getExt digunakan untuk mendapatkan string setelah "." dan fungsi getDir digunakan untuk mendapatkan string setelah "/" 
 
@@ -188,9 +192,10 @@ void* categorystar(void *arg){
 }
 ```
 
-
-
-
+#### Screenshot Hasi;
+![tedss](https://user-images.githubusercontent.com/61290164/79045509-baf5c000-7c35-11ea-9e3e-1571000f922b.PNG)
+![repisi](https://user-images.githubusercontent.com/61290164/79045511-bcbf8380-7c35-11ea-8d8c-385e9a551b57.PNG)
+![ouput](https://user-images.githubusercontent.com/61290164/79045512-bd581a00-7c35-11ea-953b-ccbe21630def.PNG)
 
 
 
